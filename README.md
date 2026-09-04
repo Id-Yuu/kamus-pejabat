@@ -19,11 +19,11 @@ Web translate sederhana untuk menerjemahkan kamus viral pejabat dan Bahasa Inggr
 ```text
 project/
 │
-├── index.html          # Tampilan antarmuka utama (UI)
+├── index.html          # UI/UX utama
 └── js/
     ├── dictionary.js   # Data kamus & pemetaan kosa-kata
-    ├── translator.js   # Mesin/logika pemrosesan terjemahan
-    └── app.js          # Pengendali UI & interaksi event
+    ├── translator.js   # logic terjemahan
+    └── app.js          # main component
 ```
 
 ---
