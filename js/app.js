@@ -47,14 +47,14 @@ const UIController = (function(translator, dict) {
 
         if (isReverseMode) {
             elements.modeTag.textContent = 'ID ➔ Kamus';
-            elements.subheadText.textContent = '✍️ Mode Dibalik: Masukkan kata Bahasa Indonesia untuk diubah ke kata kamus/slang.';
-            elements.outputTitle.textContent = '📄 Hasil Terjemahan (Kamus Slang)';
+            elements.subheadText.textContent = '✍️ Mode Dibalik: Masukkan kata Bahasa Indonesia untuk diubah ke kamus pejabat.';
+            elements.outputTitle.textContent = '📄 Hasil Terjemahan (Kamus pejabat)';
             elements.modeFooter.textContent = 'Mode: Bahasa Indonesia ➔ Kamus';
             elements.swapBtn.style.background = '#38bdf8';
             elements.swapBtn.style.borderColor = '#38bdf8';
         } else {
             elements.modeTag.textContent = 'Kamus ➔ ID';
-            elements.subheadText.textContent = '✍️ Mode Normal: Masukkan kata terdaftar/slang untuk diterjemahkan ke Bahasa Indonesia.';
+            elements.subheadText.textContent = '✍️ Mode Normal: Masukkan kamus pejabat untuk diterjemahkan ke Bahasa Indonesia.';
             elements.outputTitle.textContent = '📄 Hasil Terjemahan (Bahasa Indonesia)';
             elements.modeFooter.textContent = 'Mode: Kamus ➔ Bahasa Indonesia';
             elements.swapBtn.style.background = 'var(--accent-orange)';
