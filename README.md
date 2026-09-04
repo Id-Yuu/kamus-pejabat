@@ -3,6 +3,16 @@
 Web translate sederhana untuk menerjemahkan kamus viral pejabat dan Bahasa Inggris ke dalam Bahasa Indonesia (serta sebaliknya).
 
 ---
+## Use local
+- download & run local pc
+  ```
+  git clone https://github.com/Id-Yuu/kamus-pejabat.git
+  cd kamus-pejabat
+  ```
+- buka `index.html` di browser, atau menggunakan ekstention `Live server` pada aplikasi VsCode
+
+> [Live Preview](https://kamus-pejabat.id-yuu.workers.dev/)
+---
 
 ## Struktur Proyek
 
