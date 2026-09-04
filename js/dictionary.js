@@ -1,5 +1,6 @@
 const DictionaryModule = (function() {
     const data = new Map([
+        // Nama-pjabat
         ["gibran", "kosong, bengong"],
         ["tedy", "sok sibuk"],
         ["prabowo", "asbun, gemoy"],
@@ -24,6 +25,9 @@ const DictionaryModule = (function() {
         ["ahok", "marah"],
         ["sby", "santai/nyantai"],
         ["yusuf mansur", "duitnya mana, gak ada duit"],
+
+        // 2. KOSA-KATA BAHASA INGGRIS - BAHASA INDONESIA
+        // Pronouns (Kata Ganti)
         ["i", "saya"],
         ["you", "kamu"],
         ["we", "kita"],
@@ -41,6 +45,8 @@ const DictionaryModule = (function() {
         ["him", "dia (laki)"],
         ["us", "kita"],
         ["them", "mereka"],
+
+        // Conjunctions & Adverbs (Kata Hubung & Keterangan)
         ["and", "dan"],
         ["or", "atau"],
         ["but", "tetapi"],
@@ -67,6 +73,8 @@ const DictionaryModule = (function() {
         ["still", "masih"],
         ["yet", "belum"],
         ["again", "lagi"],
+
+        // Adjectives (Kata Sifat)
         ["well", "baik"],
         ["good", "bagus"],
         ["bad", "buruk"],
@@ -114,6 +122,8 @@ const DictionaryModule = (function() {
         ["dirty", "kotor"],
         ["bright", "terang"],
         ["dark", "gelap"],
+
+        // Verbs (Kata Kerja)
         ["love", "cinta"],
         ["hate", "benci"],
         ["like", "suka"],
@@ -228,6 +238,8 @@ const DictionaryModule = (function() {
         ["help", "bantu"],
         ["helps", "bantu"],
         ["helped", "bantu"],
+
+        // Nouns & Expressions (Kata Benda & Ungkapan Umum)
         ["thank", "terima kasih"],
         ["thanks", "terima kasih"],
         ["sorry", "maaf"],
