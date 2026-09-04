@@ -5,6 +5,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const accordionBtn = document.getElementById('accordionBtn');
     const accordionContent = document.getElementById('accordionContent');
     const accordionIcon = document.getElementById('accordionIcon');
+    const accordionTitle = document.getElementById('accordionTitle');
+    const resetButton = document.getElementById('resetButton');
+    const copyButton = document.getElementById('copyButton');
+    const copyStatus = document.getElementById('copyStatus');
 
     if (!inputText || !outputText || !modeSelect) {
         console.error('Salah satu elemen DOM tidak ditemukan.');
@@ -12,87 +16,148 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let clickState = { word: '', index: 0 };
-    
-    let accordionClickState = {
-        key: '',
-        index: 0,
-        insertedWord: ''
-    };
+    let accordionClickState = { id: '', index: 0, start: -1, end: -1, word: '' };
+
+    function isReverseMode() {
+        return modeSelect.value === 'id-to-slang';
+    }
 
     function processTranslation() {
-        const isReverse = modeSelect.value === 'id-to-slang';
-        const text = inputText.value;
-        const translated = TranslatorModule.translate(text, isReverse);
-        outputText.value = translated;
+        outputText.value = TranslatorModule.translate(inputText.value, isReverseMode());
+    }
+
+    function insertSourceWord(word) {
+        const selectionStart = inputText.selectionStart;
+        const selectionEnd = inputText.selectionEnd;
+        const before = inputText.value.slice(0, selectionStart);
+        const after = inputText.value.slice(selectionEnd);
+        const prefix = before && !/\s$/.test(before) ? ' ' : '';
+        const suffix = after && !/^\s/.test(after) ? ' ' : '';
+
+        inputText.value = `${before}${prefix}${word}${suffix}${after}`;
+        const cursor = before.length + prefix.length + word.length;
+        inputText.focus();
+        inputText.setSelectionRange(cursor, cursor);
+        processTranslation();
+        return { start: before.length + prefix.length, end: cursor };
+    }
+
+    function cycleAccordionWord(entry) {
+        const canReplacePreviousWord = accordionClickState.id === entry.id
+            && inputText.value.slice(accordionClickState.start, accordionClickState.end) === accordionClickState.word;
+        const nextIndex = canReplacePreviousWord
+            ? (accordionClickState.index + 1) % entry.options.length
+            : 0;
+        const nextWord = entry.options[nextIndex];
+
+        if (canReplacePreviousWord) {
+            const { start, end } = accordionClickState;
+            inputText.value = inputText.value.slice(0, start) + nextWord + inputText.value.slice(end);
+            inputText.focus();
+            inputText.setSelectionRange(start + nextWord.length, start + nextWord.length);
+            processTranslation();
+            accordionClickState = {
+                id: entry.id,
+                index: nextIndex,
+                start,
+                end: start + nextWord.length,
+                word: nextWord
+            };
+            return;
+        }
+
+        const range = insertSourceWord(nextWord);
+        accordionClickState = {
+            id: entry.id,
+            index: nextIndex,
+            start: range.start,
+            end: range.end,
+            word: nextWord
+        };
     }
 
     function renderAccordion() {
         if (!accordionContent) return;
+
+        const reverse = isReverseMode();
+        const groups = DictionaryModule.getAccordionGroups(reverse);
         accordionContent.innerHTML = '';
+        accordionTitle.textContent = reverse
+            ? '📘 Daftar Kosakata Bahasa Indonesia'
+            : '👤 Daftar Kosakata Nama Pejabat';
 
-        const isReverse = modeSelect.value === 'id-to-slang';
-        const dictionary = DictionaryModule.getMap(isReverse);
+        groups.forEach((group) => {
+            const groupElement = document.createElement('section');
+            groupElement.className = 'vocabulary-group';
+            groupElement.innerHTML = `
+                <div class="vocabulary-group-heading">
+                    <div>
+                        <p class="group-kicker">Kategori</p>
+                        <h3>${group.title}</h3>
+                        <p>${group.description}</p>
+                    </div>
+                    <span class="word-count">${group.entries.length} kata</span>
+                </div>
+            `;
 
-        dictionary.forEach((val, key) => {
-            const badge = document.createElement('div');
-            badge.className = 'dict-badge';
-            badge.innerHTML = `<strong>${key}</strong>: ${val}`;
-            badge.addEventListener('click', () => {
-                const options = val.split(/[,/]/).map(s => s.trim()).filter(s => s.length > 0);
-                if (options.length === 0) return;
-
-                let selectedWord = '';
-
-                if (accordionClickState.key === key) {
-                    accordionClickState.index = (accordionClickState.index + 1) % options.length;
-                    selectedWord = options[accordionClickState.index];
-
-                    const currentText = inputText.value;
-                    const lastInserted = accordionClickState.insertedWord;
-
-                    if (lastInserted && currentText.endsWith(lastInserted + ' ')) {
-                        inputText.value = currentText.slice(0, - (lastInserted.length + 1)) + selectedWord + ' ';
-                    } else {
-                        inputText.value = currentText.trimEnd() + (currentText.length ? ' ' : '') + selectedWord + ' ';
-                    }
-                } else {
-                    accordionClickState.key = key;
-                    accordionClickState.index = 0;
-                    selectedWord = options[0];
-
-                    const currentText = inputText.value;
-                    if (currentText.length > 0 && !currentText.endsWith(' ')) {
-                        inputText.value += ' ' + selectedWord + ' ';
-                    } else {
-                        inputText.value += selectedWord + ' ';
-                    }
-                }
-
-                accordionClickState.insertedWord = selectedWord;
-
-                inputText.focus();
-                processTranslation();
+            const badgeList = document.createElement('div');
+            badgeList.className = 'badge-list';
+            group.entries.forEach((entry) => {
+                const badge = document.createElement('button');
+                badge.type = 'button';
+                badge.className = 'dict-badge';
+                badge.innerHTML = `<strong>${entry.label}</strong><span>${entry.value}</span>`;
+                badge.setAttribute('aria-label', `Tambahkan ${entry.label} ke teks`);
+                badge.addEventListener('click', () => cycleAccordionWord(entry));
+                badgeList.appendChild(badge);
             });
 
-            accordionContent.appendChild(badge);
+            groupElement.appendChild(badgeList);
+            accordionContent.appendChild(groupElement);
         });
     }
 
-    if (accordionBtn && accordionContent) {
-        accordionBtn.addEventListener('click', () => {
-            const isOpen = accordionContent.classList.toggle('open');
-            accordionIcon.textContent = isOpen ? '▲' : '▼';
-        });
+    function resetTranslation() {
+        inputText.value = '';
+        outputText.value = '';
+        clickState = { word: '', index: 0 };
+        accordionClickState = { id: '', index: 0, start: -1, end: -1, word: '' };
+        copyStatus.textContent = '';
+        inputText.focus();
     }
+
+    async function copyOutput() {
+        if (!outputText.value.trim()) {
+            copyStatus.textContent = 'Belum ada hasil untuk disalin.';
+            return;
+        }
+
+        try {
+            await navigator.clipboard.writeText(outputText.value);
+            copyStatus.textContent = 'Hasil terjemahan disalin!';
+        } catch (error) {
+            outputText.select();
+            document.execCommand('copy');
+            copyStatus.textContent = 'Hasil terjemahan disalin!';
+        }
+    }
+
+    accordionBtn?.addEventListener('click', () => {
+        const isOpen = accordionContent.classList.toggle('open');
+        accordionBtn.setAttribute('aria-expanded', String(isOpen));
+        accordionIcon.textContent = isOpen ? '▲' : '▼';
+    });
 
     inputText.addEventListener('input', () => {
-        accordionClickState = { key: '', index: 0, insertedWord: '' };
+        clickState = { word: '', index: 0 };
+        accordionClickState = { id: '', index: 0, start: -1, end: -1, word: '' };
         processTranslation();
     });
 
     modeSelect.addEventListener('change', () => {
         clickState = { word: '', index: 0 };
-        accordionClickState = { key: '', index: 0, insertedWord: '' };
+        accordionClickState = { id: '', index: 0, start: -1, end: -1, word: '' };
+        copyStatus.textContent = '';
         renderAccordion();
         processTranslation();
     });
@@ -102,39 +167,28 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!text.trim()) return;
 
         const cursorPos = inputText.selectionStart;
-
-        const left = text.slice(0, cursorPos).search(/\S+$/);
-        const right = text.slice(cursorPos).search(/\s/);
-
-        let start = left;
-        let end = right === -1 ? text.length : cursorPos + right;
-        if (left === -1) start = 0;
-
-        const selectedWord = text.slice(start, end).replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
+        const startMatch = text.slice(0, cursorPos).match(/\S+$/);
+        const start = startMatch ? cursorPos - startMatch[0].length : cursorPos;
+        const endMatch = text.slice(cursorPos).match(/^\S+/);
+        const end = endMatch ? cursorPos + endMatch[0].length : cursorPos;
+        const selectedWord = text.slice(start, end).replace(/[^\p{L}\p{N}'-]/gu, '');
         if (!selectedWord) return;
 
-        const isReverse = modeSelect.value === 'id-to-slang';
-        const options = TranslatorModule.getWordOptions(selectedWord, isReverse);
+        const options = TranslatorModule.getWordOptions(selectedWord, isReverseMode());
+        if (options.length <= 1) return;
 
-        if (options.length > 1) {
-            if (clickState.word === selectedWord) {
-                clickState.index = (clickState.index + 1) % options.length;
-            } else {
-                clickState.word = selectedWord;
-                clickState.index = 0;
-            }
+        clickState.index = clickState.word === selectedWord
+            ? (clickState.index + 1) % options.length
+            : 0;
+        clickState.word = selectedWord;
 
-            const replacementWord = options[clickState.index];
-
-            const newText = text.slice(0, start) + replacementWord + text.slice(end);
-            inputText.value = newText;
-
-            const newCursorPos = start + replacementWord.length;
-            inputText.setSelectionRange(newCursorPos, newCursorPos);
-
-            processTranslation();
-        }
+        const replacement = options[clickState.index];
+        inputText.value = text.slice(0, start) + replacement + text.slice(end);
+        inputText.setSelectionRange(start + replacement.length, start + replacement.length);
+        processTranslation();
     });
 
+    resetButton?.addEventListener('click', resetTranslation);
+    copyButton?.addEventListener('click', copyOutput);
     renderAccordion();
 });
