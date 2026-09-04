@@ -2,7 +2,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputText = document.getElementById('inputText');
     const outputText = document.getElementById('outputText');
     const modeSelect = document.getElementById('modeSelect');
-    
+
+    if (!inputText || !outputText || !modeSelect) {
+        console.error('Salah satu elemen DOM (inputText, outputText, modeSelect) tidak ditemukan.');
+        return;
+    }
+
     let clickState = {
         word: '',
         index: 0
@@ -16,20 +21,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     inputText.addEventListener('input', processTranslation);
+    
     modeSelect.addEventListener('change', () => {
         clickState = { word: '', index: 0 };
         processTranslation();
     });
 
-    inputText.addEventListener('click', (e) => {
+    inputText.addEventListener('click', () => {
         const text = inputText.value;
         if (!text.trim()) return;
 
         const cursorPos = inputText.selectionStart;
-        
+
         const left = text.slice(0, cursorPos).search(/\S+$/);
         const right = text.slice(cursorPos).search(/\s/);
-        
+
         let start = left;
         let end = right === -1 ? text.length : cursorPos + right;
         if (left === -1) start = 0;
@@ -49,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const replacementWord = options[clickState.index];
-            
+
             const newText = text.slice(0, start) + replacementWord + text.slice(end);
             inputText.value = newText;
 
