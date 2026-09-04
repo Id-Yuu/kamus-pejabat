@@ -12,7 +12,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let clickState = { word: '', index: 0 };
-    let accordionClickState = { key: '', index: -1 };
+    
+    let accordionClickState = {
+        key: '',
+        index: 0,
+        insertedWord: ''
+    };
 
     function processTranslation() {
         const isReverse = modeSelect.value === 'id-to-slang';
@@ -32,26 +37,38 @@ document.addEventListener('DOMContentLoaded', () => {
             const badge = document.createElement('div');
             badge.className = 'dict-badge';
             badge.innerHTML = `<strong>${key}</strong>: ${val}`;
-
             badge.addEventListener('click', () => {
-                const options = val.split(/[,/]/).map(s => s.trim());
+                const options = val.split(/[,/]/).map(s => s.trim()).filter(s => s.length > 0);
+                if (options.length === 0) return;
+
+                let selectedWord = '';
 
                 if (accordionClickState.key === key) {
                     accordionClickState.index = (accordionClickState.index + 1) % options.length;
+                    selectedWord = options[accordionClickState.index];
+
+                    const currentText = inputText.value;
+                    const lastInserted = accordionClickState.insertedWord;
+
+                    if (lastInserted && currentText.endsWith(lastInserted + ' ')) {
+                        inputText.value = currentText.slice(0, - (lastInserted.length + 1)) + selectedWord + ' ';
+                    } else {
+                        inputText.value = currentText.trimEnd() + (currentText.length ? ' ' : '') + selectedWord + ' ';
+                    }
                 } else {
                     accordionClickState.key = key;
                     accordionClickState.index = 0;
+                    selectedWord = options[0];
+
+                    const currentText = inputText.value;
+                    if (currentText.length > 0 && !currentText.endsWith(' ')) {
+                        inputText.value += ' ' + selectedWord + ' ';
+                    } else {
+                        inputText.value += selectedWord + ' ';
+                    }
                 }
 
-                const selectedWord = options[accordionClickState.index];
-
-                if (inputText.value.length > 0 && !inputText.value.endsWith(' ')) {
-                    const words = inputText.value.trim().split(' ');
-                    words[words.length - 1] = selectedWord;
-                    inputText.value = words.join(' ') + ' ';
-                } else {
-                    inputText.value += selectedWord + ' ';
-                }
+                accordionClickState.insertedWord = selectedWord;
 
                 inputText.focus();
                 processTranslation();
@@ -68,15 +85,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    inputText.addEventListener('input', processTranslation);
+    inputText.addEventListener('input', () => {
+        accordionClickState = { key: '', index: 0, insertedWord: '' };
+        processTranslation();
+    });
 
     modeSelect.addEventListener('change', () => {
         clickState = { word: '', index: 0 };
-        accordionClickState = { key: '', index: -1 };
+        accordionClickState = { key: '', index: 0, insertedWord: '' };
         renderAccordion();
         processTranslation();
     });
-    
+
     inputText.addEventListener('click', () => {
         const text = inputText.value;
         if (!text.trim()) return;
@@ -115,5 +135,6 @@ document.addEventListener('DOMContentLoaded', () => {
             processTranslation();
         }
     });
+
     renderAccordion();
 });
