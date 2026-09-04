@@ -4,68 +4,84 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kamus Pejabat</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Patrick+Hand&display=swap" rel="stylesheet">
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            background-color: #f4f7f6;
-            color: #333;
+            background-color: #121214;
+            background-image: 
+                radial-gradient(#26262e 1px, transparent 0);
+            background-size: 24px 24px;
+            color: #e2e8f0;
+            font-family: 'Patrick Hand', cursive, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             padding: 20px;
+            font-size: 1.2rem;
         }
 
         .container {
-            background: #ffffff;
+            background: #1e1e24;
             width: 100%;
-            max-width: 800px;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            max-width: 850px;
+            padding: 35px;
+            border: 3px solid #e2e8f0;
+            border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+            box-shadow: 6px 8px 0px #000000;
+            transform: rotate(-0.5deg);
         }
 
         h1 {
             text-align: center;
             margin-bottom: 25px;
-            color: #2c3e50;
+            font-family: 'Caveat', cursive;
+            font-size: 3rem;
+            color: #f6ad55;
+            text-shadow: 2px 2px 0px #000;
+            letter-spacing: 1px;
         }
 
         .controls {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         label {
             display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #555;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+            color: #cbd5e0;
         }
 
         select {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 16px;
+            padding: 12px 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 225px 15px 195px 15px/15px 255px 15px 225px;
+            font-family: 'Patrick Hand', cursive;
+            font-size: 1.25rem;
             outline: none;
-            background-color: #fff;
+            background-color: #2d2d38;
+            color: #63b3ed;
             cursor: pointer;
+            box-shadow: 3px 4px 0px #000;
         }
 
         .translator-box {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 25px;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 650px) {
             .translator-box {
                 grid-template-columns: 1fr;
             }
@@ -78,30 +94,41 @@
 
         textarea {
             width: 100%;
-            height: 200px;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 15px;
+            height: 220px;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+            font-family: 'Patrick Hand', cursive;
+            font-size: 1.3rem;
+            line-height: 1.5;
             resize: vertical;
             outline: none;
-            transition: border-color 0.2s;
+            background-color: #2b2b36;
+            color: #f7fafc;
+            box-shadow: 4px 5px 0px #000;
+            transition: all 0.2s ease;
         }
 
         textarea:focus {
-            border-color: #3498db;
+            border-color: #f6ad55;
+            box-shadow: 4px 6px 0px #f6ad55;
         }
 
         textarea[readonly] {
-            background-color: #f8f9fa;
-            color: #2c3e50;
+            background-color: #1a1a22;
+            color: #68d391;
+            border-style: dashed;
+        }
+
+        ::placeholder {
+            color: #718096;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>⚡ KamusPejabat</h1>
+        <h1>⚡ Kamus Pejabat</h1>
 
         <div class="controls">
             <label for="modeSelect">Pilih Mode Terjemahan:</label>
@@ -118,7 +145,7 @@
             </div>
             <div class="input-group">
                 <label for="outputText">Hasil Terjemahan:</label>
-                <textarea id="outputText" readonly placeholder="Hasil terjemahan akan muncul di sini..."></textarea>
+                <textarea id="outputText" readonly placeholder="Hasil terjemahan muncul di sini..."></textarea>
             </div>
         </div>
     </div>
