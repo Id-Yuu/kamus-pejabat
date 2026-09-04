@@ -16,7 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let clickState = { word: '', index: 0 };
-    let accordionClickState = { id: '', index: 0, start: -1, end: -1, word: '' };
 
     function isReverseMode() {
         return modeSelect.value === 'id-to-slang';
@@ -39,41 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
         inputText.focus();
         inputText.setSelectionRange(cursor, cursor);
         processTranslation();
-        return { start: before.length + prefix.length, end: cursor };
-    }
-
-    function cycleAccordionWord(entry) {
-        const canReplacePreviousWord = accordionClickState.id === entry.id
-            && inputText.value.slice(accordionClickState.start, accordionClickState.end) === accordionClickState.word;
-        const nextIndex = canReplacePreviousWord
-            ? (accordionClickState.index + 1) % entry.options.length
-            : 0;
-        const nextWord = entry.options[nextIndex];
-
-        if (canReplacePreviousWord) {
-            const { start, end } = accordionClickState;
-            inputText.value = inputText.value.slice(0, start) + nextWord + inputText.value.slice(end);
-            inputText.focus();
-            inputText.setSelectionRange(start + nextWord.length, start + nextWord.length);
-            processTranslation();
-            accordionClickState = {
-                id: entry.id,
-                index: nextIndex,
-                start,
-                end: start + nextWord.length,
-                word: nextWord
-            };
-            return;
-        }
-
-        const range = insertSourceWord(nextWord);
-        accordionClickState = {
-            id: entry.id,
-            index: nextIndex,
-            start: range.start,
-            end: range.end,
-            word: nextWord
-        };
     }
 
     function renderAccordion() {
@@ -102,13 +66,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const badgeList = document.createElement('div');
             badgeList.className = 'badge-list';
-            group.entries.forEach((entry) => {
+            group.entries.forEach(({ key, value }) => {
                 const badge = document.createElement('button');
                 badge.type = 'button';
                 badge.className = 'dict-badge';
-                badge.innerHTML = `<strong>${entry.label}</strong><span>${entry.value}</span>`;
-                badge.setAttribute('aria-label', `Tambahkan ${entry.label} ke teks`);
-                badge.addEventListener('click', () => cycleAccordionWord(entry));
+                badge.innerHTML = `<strong>${key}</strong><span>${value}</span>`;
+                badge.setAttribute('aria-label', `Tambahkan ${key} ke teks`);
+                badge.addEventListener('click', () => insertSourceWord(key));
                 badgeList.appendChild(badge);
             });
 
@@ -121,7 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
         inputText.value = '';
         outputText.value = '';
         clickState = { word: '', index: 0 };
-        accordionClickState = { id: '', index: 0, start: -1, end: -1, word: '' };
         copyStatus.textContent = '';
         inputText.focus();
     }
@@ -150,13 +113,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     inputText.addEventListener('input', () => {
         clickState = { word: '', index: 0 };
-        accordionClickState = { id: '', index: 0, start: -1, end: -1, word: '' };
         processTranslation();
     });
 
     modeSelect.addEventListener('change', () => {
         clickState = { word: '', index: 0 };
-        accordionClickState = { id: '', index: 0, start: -1, end: -1, word: '' };
         copyStatus.textContent = '';
         renderAccordion();
         processTranslation();

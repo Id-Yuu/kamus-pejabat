@@ -44,26 +44,13 @@ const DictionaryModule = (function () {
     }
 
     function getAccordionGroups(reverse = false) {
-        const entries = reverse
-            ? officialEntries.map(([official, meanings]) => ({
-                id: official,
-                label: meanings.join(', '),
-                value: official,
-                options: meanings
-            }))
-            : officialEntries.map(([official, meanings]) => ({
-                id: official,
-                label: official,
-                value: meanings.join(', '),
-                options: [official]
-            }));
-
+        const dictionary = getMap(reverse);
         return [{
             title: reverse ? 'Bahasa Indonesia' : 'Nama Pejabat',
             description: reverse
-                ? 'Klik lagi kosakata yang sama untuk mengganti variasi setelah tanda koma.'
+                ? 'Klik kata Bahasa Indonesia untuk menambahkannya ke teks.'
                 : 'Klik nama pejabat untuk menambahkannya ke teks.',
-            entries
+            entries: Array.from(dictionary, ([key, value]) => ({ key, value }))
         }];
     }
 
