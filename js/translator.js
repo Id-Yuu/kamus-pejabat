@@ -1,36 +1,52 @@
-const TranslatorModule = (function(dict) {
-    function escapeRegex(str) {
-        return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    }
-    
-    function process(text, isReverse = false) {
-        if (!text || !text.trim()) return '';
-        let result = text;
-        const keys = dict.getSortedKeys(isReverse);
-        const map = dict.getMap(isReverse);
-        for (const key of keys) {
-            const escaped = escapeRegex(key);
-            if (key.includes(' ')) {
-                const regex = new RegExp(`(?:^|\\s)(${escaped})(?=\\s|$|[.,!?;:])`, 'gi');
-                result = result.replace(regex, (match) => {
-                    const prefix = match.startsWith(' ') ? ' ' : '';
-                    return prefix + map.get(key);
-                });
-            } else {
-                const regex = new RegExp(`\\b${escaped}\\b`, 'gi');
-                result = result.replace(regex, map.get(key));
-            }
+const TranslatorModule = (function() {
+
+    function translateText(text, reverse = false) {
+        if (!text || text.trim() === '') return '';
+
+        const dictionary = DictionaryModule.getMap(reverse);
+        const sortedKeys = DictionaryModule.getSortedKeys(reverse);
+
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }
-        return result;
+
+        let resultText = text;
+        
+        const replacements = [];
+
+        sortedKeys.forEach((key, index) => {
+            const regex = new RegExp('\\b' + escapeRegExp(key) + '\\b', 'gi');
+            if (regex.test(resultText)) {
+                const targetValue = dictionary.get(key);
+                const placeholder = `___REPL_${index}___`;
+                
+                replacements.push({
+                    placeholder: placeholder,
+                    value: targetValue,
+                    originalKey: key
+                });
+
+                resultText = resultText.replace(regex, placeholder);
+            }
+        });
+
+        replacements.forEach(item => {
+            const placeholderRegex = new RegExp(item.placeholder, 'g');
+            resultText = resultText.replace(placeholderRegex, item.value);
+        });
+
+        return resultText;
     }
-    
-    function countWords(str) {
-        if (!str || !str.trim()) return 0;
-        return str.trim().split(/\s+/).length;
+
+    function getWordOptions(word, reverse = false) {
+        const dictionary = DictionaryModule.getMap(reverse);
+        const val = dictionary.get(word.toLowerCase().trim());
+        if (!val) return [word];
+        return val.split(',').map(s => s.trim());
     }
-    
+
     return {
-        process,
-        countWords
+        translate: translateText,
+        getWordOptions: getWordOptions
     };
-})(DictionaryModule);
+})();
