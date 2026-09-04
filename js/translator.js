@@ -11,7 +11,6 @@ const TranslatorModule = (function() {
         }
 
         let resultText = text;
-        
         const replacements = [];
 
         sortedKeys.forEach((key, index) => {
