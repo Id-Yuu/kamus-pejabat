@@ -1,82 +1,211 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kamus Pejabat</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root { --ink: #22242b; --paper: #fffdf5; --paper-dark: #f2eadb; --blue: #2666cf; --orange: #d96436; --green: #26734d; --line: #d7cdbb; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { min-height: 100vh; padding: 32px 18px; color: var(--ink); font-family: 'Nunito Sans', sans-serif; background-color: #e8e1d3; background-image: radial-gradient(#c8bda9 1px, transparent 1px); background-size: 20px 20px; }
-        .container { width: min(100%, 980px); margin: 0 auto; padding: clamp(24px, 5vw, 48px); background: var(--paper); border: 2px solid var(--ink); border-radius: 20px 28px 19px 25px; box-shadow: 8px 9px 0 var(--ink); }
-        .eyebrow, .group-kicker { color: var(--orange); font-family: 'Kalam', cursive; font-size: 1rem; font-weight: 700; letter-spacing: .04em; }
-        h1, h2, h3, label, .handwritten { font-family: 'Kalam', cursive; }
-        h1 { margin: 3px 0 8px; font-size: clamp(2.3rem, 6vw, 4.1rem); line-height: 1; color: var(--blue); }
-        .intro { max-width: 620px; margin-bottom: 30px; color: #565b66; font-size: 1rem; line-height: 1.6; }
-        .controls { display: grid; gap: 8px; margin-bottom: 24px; }
-        label { font-size: 1.25rem; font-weight: 700; }
-        select, textarea, button { font: inherit; }
-        select { width: 100%; min-height: 52px; padding: 10px 14px; color: var(--ink); font-family: 'Kalam', cursive; font-size: 1.15rem; background: #fff; border: 2px solid var(--ink); border-radius: 12px 16px 11px 14px; cursor: pointer; }
-        select:focus-visible, textarea:focus-visible, button:focus-visible { outline: 3px solid #f6bd60; outline-offset: 3px; }
-        .translator-box { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
-        .input-group { display: grid; gap: 8px; }
-        .label-hint { font-family: 'Nunito Sans', sans-serif; font-size: .8rem; font-weight: 600; color: #6b7280; }
-        textarea { width: 100%; min-height: 190px; padding: 15px; color: var(--ink); font-family: 'Kalam', cursive; font-size: 1.27rem; line-height: 1.45; background: repeating-linear-gradient(var(--paper), var(--paper) 32px, #d9e5f4 33px); border: 2px solid var(--ink); border-radius: 14px 10px 15px 11px; resize: vertical; }
-        textarea[readonly] { color: #155e3c; background: repeating-linear-gradient(#f4fbf6, #f4fbf6 32px, #cce6d5 33px); border-style: dashed; }
-        ::placeholder { color: #9096a0; }
-        .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 18px 0 28px; }
-        .button { min-height: 42px; padding: 8px 16px; border: 2px solid var(--ink); border-radius: 12px 15px 11px 14px; font-family: 'Kalam', cursive; font-weight: 700; cursor: pointer; transition: transform .16s ease, box-shadow .16s ease; }
-        .button:hover { transform: translate(-2px, -2px); box-shadow: 3px 3px 0 var(--ink); }
-        .button-copy { color: #fff; background: var(--blue); }.button-reset { background: #fff; }.copy-status { min-height: 1.2em; color: var(--green); font-size: .9rem; font-weight: 700; }
-        .accordion-item { overflow: hidden; background: #fff; border: 2px solid var(--ink); border-radius: 16px 20px 14px 18px; }
-        .accordion-header { display: flex; width: 100%; padding: 15px 18px; color: var(--ink); text-align: left; background: #f8f2e6; border: 0; cursor: pointer; align-items: center; justify-content: space-between; gap: 16px; }
-        .accordion-header:hover { background: #f2e6d3; }.accordion-header span:first-child { font-family: 'Kalam', cursive; font-size: 1.3rem; font-weight: 700; }.accordion-icon { color: var(--blue); font-size: 1.1rem; }
-        .accordion-content { display: none; padding: 18px; border-top: 2px dashed var(--line); }.accordion-content.open { display: block; }
-        .vocabulary-group { padding: 16px; background: #fffdf8; border: 1px solid var(--line); border-left: 6px solid var(--orange); border-radius: 10px; }
-        .vocabulary-group-heading { display: flex; justify-content: space-between; gap: 16px; align-items: start; margin-bottom: 14px; }.vocabulary-group h3 { font-size: 1.55rem; line-height: 1.1; }.vocabulary-group-heading p:not(.group-kicker) { margin-top: 3px; color: #626872; font-size: .9rem; }.word-count { flex: none; padding: 3px 10px; color: var(--blue); font-size: .8rem; font-weight: 800; background: #e9f0ff; border-radius: 999px; }
-        .badge-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 9px; }.dict-badge { min-width: 0; padding: 9px 11px; text-align: left; color: var(--ink); background: #fff; border: 1px solid #bfb29c; border-radius: 9px 12px 8px 11px; cursor: pointer; transition: background .16s ease, transform .16s ease; }.dict-badge:hover { background: #fff0df; border-color: var(--orange); transform: translateY(-2px); }.dict-badge strong { display: block; color: var(--blue); font-family: 'Kalam', cursive; font-size: 1.08rem; line-height: 1.1; }.dict-badge span { display: block; margin-top: 2px; color: #676c76; font-size: .78rem; line-height: 1.25; }
-        @media (max-width: 650px) { body { padding: 20px 12px; }.container { box-shadow: 5px 6px 0 var(--ink); }.translator-box { grid-template-columns: 1fr; }.vocabulary-group-heading { display: block; }.word-count { display: inline-block; margin-top: 8px; }.badge-list { grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); } }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Translator Bahasa Gaul Politik</title>
+  <style>
+:root {
+  --bg: #121212;
+  --surface: #1e1e1e;
+  --surface-alt: #262626;
+  --border: #333333;
+  --text: #e6e6e6;
+  --text-muted: #a0a0a0;
+  --accent: #7c5cff;
+  --accent-hover: #9575ff;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  line-height: 1.5;
+  padding: 20px;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+header h1 {
+  font-size: 1.8rem;
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.translator-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.text-area-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+textarea {
+  width: 100%;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  font-family: inherit;
+  font-size: 1rem;
+  resize: vertical;
+}
+
+textarea:focus {
+  outline: 2px solid var(--accent);
+  border-color: transparent;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+button {
+  background: var(--accent);
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 18px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+button:hover {
+  background: var(--accent-hover);
+}
+
+.sr-status {
+  margin-left: 8px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.vocab-section h2 {
+  font-size: 1.3rem;
+  margin-bottom: 12px;
+}
+
+.accordion-item {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+.accordion-header {
+  width: 100%;
+  text-align: left;
+  background: var(--surface);
+  color: var(--text);
+  border: none;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.accordion-header:hover {
+  background: var(--surface-alt);
+}
+
+.accordion-panel {
+  padding: 12px 16px;
+  background: var(--surface-alt);
+  border-top: 1px solid var(--border);
+}
+
+.badge {
+  display: inline-block;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 12px;
+  margin: 4px 4px 4px 0;
+  font-size: 0.85rem;
+}
+
+.badge strong {
+  color: var(--accent-hover);
+}
+
+.disclaimer {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+</style>
 </head>
 <body>
-    <main class="container">
-        <p class="eyebrow">Penerjemah kata viral</p>
-        <h1>⚡ Kamus Pejabat</h1>
-        <p class="intro">Pilih arah terjemahan, tulis kata, lalu gunakan daftar kosakata sesuai kategori untuk mengisi teks dengan cepat.</p>
-        <div class="controls">
-            <label for="modeSelect">Arah terjemahan</label>
-            <select id="modeSelect">
-                <option value="slang-to-id">Kamus Pejabat → Bahasa Indonesia</option>
-                <option value="id-to-slang">Bahasa Indonesia → Kamus Pejabat</option>
-            </select>
-        </div>
-        <section class="translator-box" aria-label="Penerjemah">
-            <div class="input-group">
-                <label for="inputText">Teks asli <span class="label-hint">Klik kata di teks untuk mengganti variasi, bila tersedia.</span></label>
-                <textarea id="inputText" placeholder="Ketik atau pilih kosakata di bawah..."></textarea>
-            </div>
-            <div class="input-group">
-                <label for="outputText">Hasil terjemahan</label>
-                <textarea id="outputText" readonly placeholder="Hasil terjemahan muncul di sini..."></textarea>
-            </div>
-        </section>
-        <div class="actions">
-            <button class="button button-copy" type="button" id="copyButton">Salin output</button>
-            <button class="button button-reset" type="button" id="resetButton">Reset</button>
-            <span class="copy-status" id="copyStatus" role="status" aria-live="polite"></span>
-        </div>
-        <section class="accordion-item">
-            <button class="accordion-header" id="accordionBtn" type="button" aria-expanded="false" aria-controls="accordionContent">
-                <span id="accordionTitle">Daftar Kosakata</span><span class="accordion-icon" id="accordionIcon" aria-hidden="true">▼</span>
-            </button>
-            <div class="accordion-content" id="accordionContent"></div>
-        </section>
-    </main>
-    <script src="js/dictionary.js"></script>
-    <script src="js/translator.js"></script>
-    <script src="js/app.js"></script>
+  <main class="container">
+    <header>
+      <h1>Translator Bahasa Gaul Politik</h1>
+      <p class="subtitle">Ketik kalimat biasa, biar diterjemahin versi receh-nya.</p>
+    </header>
+
+    <section class="translator-panel">
+      <div class="text-area-group">
+        <label for="input-text">Teks Asli</label>
+        <textarea id="input-text" rows="6" placeholder="Tulis kalimatmu di sini..."></textarea>
+      </div>
+
+      <div class="text-area-group">
+        <label for="output-text">Hasil Terjemahan</label>
+        <textarea id="output-text" rows="6" readonly></textarea>
+      </div>
+
+      <div class="actions">
+        <button id="copy-btn" type="button">Salin Output</button>
+        <button id="reset-btn" type="button">Reset</button>
+        <span id="copy-status" role="status" aria-live="polite" class="sr-status"></span>
+      </div>
+    </section>
+
+    <section class="vocab-section">
+      <h2>Daftar Kosakata</h2>
+      <div id="accordion" class="accordion"></div>
+    </section>
+
+    <footer class="disclaimer">
+      Halaman ini berisi konten hiburan/parodi, bukan pernyataan faktual.
+    </footer>
+  </main>
+
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>
