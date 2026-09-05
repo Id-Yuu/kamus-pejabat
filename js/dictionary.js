@@ -28,7 +28,7 @@ const DICTIONARY = {
   ],
   "Tokoh Agama": [
     { target: "UAH",          sinonim: ["damai"] },
-    { target: "Yusuf Mansur", sinonim: ["duitnya mana", "gak ada duit"] },
+    { target: "Yusuf Mansur", sinonim: ["darimana duitnya", "gak ada duit"] },
   ],
   "Selebriti & Figur Publik": [
     { target: "Raffi",    sinonim: ["nyuci"] },
