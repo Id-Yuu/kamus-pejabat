@@ -1,26 +1,29 @@
-const TranslatorModule = (function () {
-    function escapeRegExp(string) {
-        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    }
+import DICTIONARY from './dictionary.js';
 
-    function translateText(text, reverse = false) {
-        if (!text || text.trim() === '') return '';
+function flattenDictionary(dict) {
+  const flat = [];
+  Object.values(dict).forEach((items) => {
+    items.forEach(({ target, sinonim }) => {
+      sinonim.forEach((kata) => flat.push({ kata, target }));
+    });
+  });
+  return flat;
+}
 
-        const dictionary = DictionaryModule.getMap(reverse);
-        let resultText = text;
+function escapeRegex(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
-        DictionaryModule.getSortedKeys(reverse).forEach((key) => {
-            const regex = new RegExp(`\\b${escapeRegExp(key)}\\b`, 'gi');
-            resultText = resultText.replace(regex, dictionary.get(key));
-        });
+function buildMatcher(flatList) {
+  const sorted = [...flatList].sort((a, b) => b.kata.length - a.kata.length);
+  const pattern = sorted.map((item) => escapeRegex(item.kata)).join('|');
+  const lookup = Object.fromEntries(sorted.map((item) => [item.kata.toLowerCase(), item.target]));
+  return { regex: new RegExp(`\\b(${pattern})\\b`, 'gi'), lookup };
+}
 
-        return resultText;
-    }
+const { regex, lookup } = buildMatcher(flattenDictionary(DICTIONARY));
 
-    function getWordOptions(word, reverse = false) {
-        const value = DictionaryModule.getMap(reverse).get(word.toLowerCase().trim());
-        return value ? value.split(',').map((item) => item.trim()) : [word];
-    }
-
-    return { translate: translateText, getWordOptions };
-})();
+export function translateText(input) {
+  if (!input) return '';
+  return input.replace(regex, (match) => lookup[match.toLowerCase()] ?? match);
+}
