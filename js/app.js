@@ -1,155 +1,77 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const inputText = document.getElementById('inputText');
-    const outputText = document.getElementById('outputText');
-    const modeSelect = document.getElementById('modeSelect');
-    const accordionBtn = document.getElementById('accordionBtn');
-    const accordionContent = document.getElementById('accordionContent');
-    const accordionIcon = document.getElementById('accordionIcon');
-    const accordionTitle = document.getElementById('accordionTitle');
-    const resetButton = document.getElementById('resetButton');
-    const copyButton = document.getElementById('copyButton');
-    const copyStatus = document.getElementById('copyStatus');
+import DICTIONARY from './dictionary.js';
+import { translateText } from './translator.js';
 
-    if (!inputText || !outputText || !modeSelect) {
-        console.error('Salah satu elemen DOM tidak ditemukan.');
-        return;
-    }
+const inputEl = document.getElementById('input-text');
+const outputEl = document.getElementById('output-text');
+const copyBtn = document.getElementById('copy-btn');
+const resetBtn = document.getElementById('reset-btn');
+const statusEl = document.getElementById('copy-status');
+const accordionEl = document.getElementById('accordion');
 
-    let clickState = { word: '', index: 0 };
+function renderAccordion() {
+  Object.entries(DICTIONARY).forEach(([kategori, items], idx) => {
+    const panelId = `panel-${idx}`;
 
-    function isReverseMode() {
-        return modeSelect.value === 'id-to-slang';
-    }
+    const wrapper = document.createElement('div');
+    wrapper.className = 'accordion-item';
 
-    function processTranslation() {
-        outputText.value = TranslatorModule.translate(inputText.value, isReverseMode());
-    }
+    const header = document.createElement('button');
+    header.type = 'button';
+    header.className = 'accordion-header';
+    header.setAttribute('aria-expanded', 'false');
+    header.setAttribute('aria-controls', panelId);
+    header.textContent = kategori;
 
-    function insertSourceWord(word) {
-        const selectionStart = inputText.selectionStart;
-        const selectionEnd = inputText.selectionEnd;
-        const before = inputText.value.slice(0, selectionStart);
-        const after = inputText.value.slice(selectionEnd);
-        const prefix = before && !/\s$/.test(before) ? ' ' : '';
-        const suffix = after && !/^\s/.test(after) ? ' ' : '';
+    const panel = document.createElement('div');
+    panel.id = panelId;
+    panel.className = 'accordion-panel';
+    panel.hidden = true;
 
-        inputText.value = `${before}${prefix}${word}${suffix}${after}`;
-        const cursor = before.length + prefix.length + word.length;
-        inputText.focus();
-        inputText.setSelectionRange(cursor, cursor);
-        processTranslation();
-    }
-
-    function renderAccordion() {
-        if (!accordionContent) return;
-
-        const reverse = isReverseMode();
-        const groups = DictionaryModule.getAccordionGroups(reverse);
-        accordionContent.innerHTML = '';
-        accordionTitle.textContent = reverse
-            ? '📘 Daftar Kosakata Bahasa Indonesia'
-            : '👤 Daftar Kosakata Nama Pejabat';
-
-        groups.forEach((group) => {
-            const groupElement = document.createElement('section');
-            groupElement.className = 'vocabulary-group';
-            groupElement.innerHTML = `
-                <div class="vocabulary-group-heading">
-                    <div>
-                        <p class="group-kicker">Kategori</p>
-                        <h3>${group.title}</h3>
-                        <p>${group.description}</p>
-                    </div>
-                    <span class="word-count">${group.entries.length} kata</span>
-                </div>
-            `;
-
-            const badgeList = document.createElement('div');
-            badgeList.className = 'badge-list';
-            group.entries.forEach(({ key, value }) => {
-                const badge = document.createElement('button');
-                badge.type = 'button';
-                badge.className = 'dict-badge';
-                badge.innerHTML = `<strong>${key}</strong><span>${value}</span>`;
-                badge.setAttribute('aria-label', `Tambahkan ${key} ke teks`);
-                badge.addEventListener('click', () => insertSourceWord(key));
-                badgeList.appendChild(badge);
-            });
-
-            groupElement.appendChild(badgeList);
-            accordionContent.appendChild(groupElement);
-        });
-    }
-
-    function resetTranslation() {
-        inputText.value = '';
-        outputText.value = '';
-        clickState = { word: '', index: 0 };
-        copyStatus.textContent = '';
-        inputText.focus();
-    }
-
-    async function copyOutput() {
-        if (!outputText.value.trim()) {
-            copyStatus.textContent = 'Belum ada hasil untuk disalin.';
-            return;
-        }
-
-        try {
-            await navigator.clipboard.writeText(outputText.value);
-            copyStatus.textContent = 'Hasil terjemahan disalin!';
-        } catch (error) {
-            outputText.select();
-            document.execCommand('copy');
-            copyStatus.textContent = 'Hasil terjemahan disalin!';
-        }
-    }
-
-    accordionBtn?.addEventListener('click', () => {
-        const isOpen = accordionContent.classList.toggle('open');
-        accordionBtn.setAttribute('aria-expanded', String(isOpen));
-        accordionIcon.textContent = isOpen ? '▲' : '▼';
+    items.forEach(({ target, sinonim }) => {
+      const badge = document.createElement('span');
+      badge.className = 'badge';
+      badge.innerHTML = `${sinonim.join(', ')} <strong>&rarr; ${target}</strong>`;
+      panel.appendChild(badge);
     });
 
-    inputText.addEventListener('input', () => {
-        clickState = { word: '', index: 0 };
-        processTranslation();
+    header.addEventListener('click', () => {
+      const expanded = header.getAttribute('aria-expanded') === 'true';
+      header.setAttribute('aria-expanded', String(!expanded));
+      panel.hidden = expanded;
     });
 
-    modeSelect.addEventListener('change', () => {
-        clickState = { word: '', index: 0 };
-        copyStatus.textContent = '';
-        renderAccordion();
-        processTranslation();
-    });
+    wrapper.append(header, panel);
+    accordionEl.appendChild(wrapper);
+  });
+}
 
-    inputText.addEventListener('click', () => {
-        const text = inputText.value;
-        if (!text.trim()) return;
+renderAccordion();
 
-        const cursorPos = inputText.selectionStart;
-        const startMatch = text.slice(0, cursorPos).match(/\S+$/);
-        const start = startMatch ? cursorPos - startMatch[0].length : cursorPos;
-        const endMatch = text.slice(cursorPos).match(/^\S+/);
-        const end = endMatch ? cursorPos + endMatch[0].length : cursorPos;
-        const selectedWord = text.slice(start, end).replace(/[^\p{L}\p{N}'-]/gu, '');
-        if (!selectedWord) return;
+inputEl.addEventListener('input', () => {
+  outputEl.value = translateText(inputEl.value);
+});
 
-        const options = TranslatorModule.getWordOptions(selectedWord, isReverseMode());
-        if (options.length <= 1) return;
+resetBtn.addEventListener('click', () => {
+  inputEl.value = '';
+  outputEl.value = '';
+  statusEl.textContent = '';
+  inputEl.focus();
+});
 
-        clickState.index = clickState.word === selectedWord
-            ? (clickState.index + 1) % options.length
-            : 0;
-        clickState.word = selectedWord;
-
-        const replacement = options[clickState.index];
-        inputText.value = text.slice(0, start) + replacement + text.slice(end);
-        inputText.setSelectionRange(start + replacement.length, start + replacement.length);
-        processTranslation();
-    });
-
-    resetButton?.addEventListener('click', resetTranslation);
-    copyButton?.addEventListener('click', copyOutput);
-    renderAccordion();
+copyBtn.addEventListener('click', async () => {
+  const text = outputEl.value;
+  if (!text) {
+    statusEl.textContent = 'Tidak ada teks untuk disalin.';
+    return;
+  }
+  try {
+    await navigator.clipboard.writeText(text);
+    statusEl.textContent = 'Tersalin ke clipboard!';
+  } catch {
+    outputEl.select();
+    outputEl.setSelectionRange(0, text.length);
+    const ok = document.execCommand('copy');
+    statusEl.textContent = ok ? 'Tersalin (mode fallback).' : 'Gagal menyalin, salin manual ya.';
+  }
+  setTimeout(() => { statusEl.textContent = ''; }, 3000);
 });
