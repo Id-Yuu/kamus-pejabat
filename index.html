@@ -106,7 +106,46 @@
       outline: 2px solid var(--accent);
       border-color: transparent;
     }
+    .output-box {
+      width: 100%;
+      min-height: 150px;
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      font-family: inherit;
+      font-size: 1rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.6;
+    }
 
+    .output-box:empty::before {
+      content: "Hasil terjemahan akan muncul di sini...";
+      color: var(--text-muted);
+    }
+    .switchable-word {
+      cursor: pointer;
+      border-radius: 5px;
+      padding: 1px 3px;
+      transition:
+        background 0.15s ease,
+        outline 0.15s ease;
+    }
+    .switchable-word:hover {
+      background: var(--surface-alt);
+      outline: 1px solid var(--border);
+    }
+
+    .switchable-word:active {
+      background: var(--accent);
+      color: #ffffff;
+    }
+    .switchable-word.has-alternatives {
+      text-decoration: underline dotted var(--accent-hover);
+      text-underline-offset: 3px;
+    }
     .actions {
       display: flex;
       align-items: center;
@@ -237,15 +276,17 @@
       </div>
 
       <div class="text-area-group">
-        <label id="output-label" for="output-text">
+        <label id="output-label">
           Hasil Terjemahan
         </label>
 
-        <textarea
+        <div
           id="output-text"
-          rows="6"
-          readonly
-        ></textarea>
+          class="output-box"
+          role="textbox"
+          aria-readonly="true"
+          tabindex="0"
+        ></div>
       </div>
 
       <div class="actions">
