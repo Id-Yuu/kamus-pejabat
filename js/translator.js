@@ -19,7 +19,6 @@ function flattenDictionary(dict) {
   return flat;
 }
 
-
 function buildMatcher(flatList) {
   const sorted = [...flatList].sort(
     (a, b) => b.kata.length - a.kata.length
@@ -30,6 +29,7 @@ function buildMatcher(flatList) {
       lookup: {}
     };
   }
+
   const pattern = sorted
     .map((item) => escapeRegex(item.kata))
     .join('|');
@@ -69,13 +69,12 @@ function flattenNameDictionary(dict) {
     items.forEach(({ target, sinonim }) => {
       flat.push({
         nama: target,
-        sinonim
+        sinonim: [...sinonim]
       });
     });
   });
   return flat;
 }
-
 
 function buildNameMatcher(flatList) {
   const sorted = [...flatList].sort(
@@ -94,7 +93,7 @@ function buildNameMatcher(flatList) {
   const lookup = Object.fromEntries(
     sorted.map((item) => [
       item.nama.toLowerCase(),
-      item.sinonim.join(', ')
+      item.sinonim
     ])
   );
   return {
@@ -110,15 +109,69 @@ const {
   flattenNameDictionary(DICTIONARY)
 );
 
-export function translateNameToSlang(input) {
-  if (!input) return '';
+export function translateNameToTokens(input) {
+  if (!input) return [];
   if (!nameRegex) {
-    return input;
+    return [
+      {
+        type: 'text',
+        value: input
+      }
+    ];
   }
-  return input.replace(
+
+  const tokens = [];
+  let lastIndex = 0;
+
+  input.replace(
     nameRegex,
-    (match) => nameLookup[match.toLowerCase()] ?? match
+    (match, _group, offset) => {
+      if (offset > lastIndex) {
+        tokens.push({
+          type: 'text',
+          value: input.slice(lastIndex, offset)
+        });
+      }
+
+      const alternatives =
+        nameLookup[match.toLowerCase()] ?? [];
+      if (alternatives.length) {
+        tokens.push({
+          type: 'switchable',
+          original: match,
+          alternatives,
+          index: 0
+        });
+      } else {
+        tokens.push({
+          type: 'text',
+          value: match
+        });
+      }
+      lastIndex = offset + match.length;
+      return match;
+    }
   );
+  if (lastIndex < input.length) {
+    tokens.push({
+      type: 'text',
+      value: input.slice(lastIndex)
+    });
+  }
+  return tokens;
+}
+
+export function translateNameToSlang(input) {
+  const tokens = translateNameToTokens(input);
+
+  return tokens
+    .map((token) => {
+      if (token.type === 'switchable') {
+        return token.alternatives[token.index];
+      }
+      return token.value;
+    })
+    .join('');
 }
 
 export function translateByMode(input, mode) {
