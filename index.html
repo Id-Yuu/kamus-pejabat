@@ -31,7 +31,32 @@
       line-height: 1.5;
       padding: 20px;
     }
-
+    blockquote {
+        line-height: 100%;
+        position: relative;
+        font-family: Georgia, serif;
+        display: block;
+        margin: 25px 10px;
+    }
+    
+    blockquote:before {
+        content: '\201C';
+        position: absolute;
+        top: -10px;
+        left: -10px;
+        font-family: Arial, sans-serif;
+        font-size: 35px;
+        font-style: normal;
+    }
+    
+    blockquote:after {
+        content: '\201C';
+        position: absolute;
+        bottom: -25px;
+        font-family: Arial, sans-serif;
+        font-size: 35px;
+        font-style: normal;
+    }
     .container {
       max-width: 800px;
       margin: 0 auto;
@@ -305,7 +330,7 @@
           class="sr-status"
         ></span>
       </div>
-
+    <blockquote>klik 2x jika ada kata yang <span class="switchable-word has-alternatives">bergaris bawah</span></blockquote>
     </section>
 
     <section class="vocab-section">
