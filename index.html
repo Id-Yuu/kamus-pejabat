@@ -3,197 +3,268 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Translator Bahasa Gaul Politik</title>
+  <title>Kamus Pejabat</title>
+
   <style>
-:root {
-  --bg: #121212;
-  --surface: #1e1e1e;
-  --surface-alt: #262626;
-  --border: #333333;
-  --text: #e6e6e6;
-  --text-muted: #a0a0a0;
-  --accent: #7c5cff;
-  --accent-hover: #9575ff;
-}
+    :root {
+      --bg: #121212;
+      --surface: #1e1e1e;
+      --surface-alt: #262626;
+      --border: #333333;
+      --text: #e6e6e6;
+      --text-muted: #a0a0a0;
+      --accent: #7c5cff;
+      --accent-hover: #9575ff;
+    }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  line-height: 1.5;
-  padding: 20px;
-}
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont,
+        'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      line-height: 1.5;
+      padding: 20px;
+    }
 
-.container {
-  max-width: 800px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
 
-header h1 {
-  font-size: 1.8rem;
-  margin-bottom: 6px;
-}
+    header h1 {
+      font-size: 1.8rem;
+      margin-bottom: 6px;
+    }
 
-.subtitle {
-  color: var(--text-muted);
-  font-size: 0.95rem;
-}
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
 
-.translator-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
+    .translator-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
 
-.text-area-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
+    .mode-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
 
-label {
-  font-weight: 600;
-  font-size: 0.9rem;
-}
+    .mode-select {
+      width: 100%;
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      font-family: inherit;
+      font-size: 1rem;
+      cursor: pointer;
+    }
 
-textarea {
-  width: 100%;
-  background: var(--surface);
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 12px;
-  font-family: inherit;
-  font-size: 1rem;
-  resize: vertical;
-}
+    .mode-select:focus {
+      outline: 2px solid var(--accent);
+      border-color: transparent;
+    }
 
-textarea:focus {
-  outline: 2px solid var(--accent);
-  border-color: transparent;
-}
+    .text-area-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
 
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+    label {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
 
-button {
-  background: var(--accent);
-  color: #ffffff;
-  border: none;
-  border-radius: 6px;
-  padding: 10px 18px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
+    textarea {
+      width: 100%;
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      font-family: inherit;
+      font-size: 1rem;
+      resize: vertical;
+    }
 
-button:hover {
-  background: var(--accent-hover);
-}
+    textarea:focus {
+      outline: 2px solid var(--accent);
+      border-color: transparent;
+    }
 
-.sr-status {
-  margin-left: 8px;
-  color: var(--text-muted);
-  font-size: 0.85rem;
-}
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
 
-.vocab-section h2 {
-  font-size: 1.3rem;
-  margin-bottom: 12px;
-}
+    button {
+      background: var(--accent);
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 18px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
 
-.accordion-item {
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  margin-bottom: 8px;
-  overflow: hidden;
-}
+    button:hover {
+      background: var(--accent-hover);
+    }
 
-.accordion-header {
-  width: 100%;
-  text-align: left;
-  background: var(--surface);
-  color: var(--text);
-  border: none;
-  padding: 12px 16px;
-  cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: 600;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+    .sr-status {
+      margin-left: 8px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
 
-.accordion-header:hover {
-  background: var(--surface-alt);
-}
+    .vocab-section h2 {
+      font-size: 1.3rem;
+      margin-bottom: 12px;
+    }
 
-.accordion-panel {
-  padding: 12px 16px;
-  background: var(--surface-alt);
-  border-top: 1px solid var(--border);
-}
+    .accordion-item {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
 
-.badge {
-  display: inline-block;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 6px 12px;
-  margin: 4px 4px 4px 0;
-  font-size: 0.85rem;
-}
+    .accordion-header {
+      width: 100%;
+      text-align: left;
+      background: var(--surface);
+      color: var(--text);
+      border: none;
+      padding: 12px 16px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-.badge strong {
-  color: var(--accent-hover);
-}
+    .accordion-header:hover {
+      background: var(--surface-alt);
+    }
 
-.disclaimer {
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid var(--border);
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  text-align: center;
-}
-</style>
+    .accordion-panel {
+      padding: 12px 16px;
+      background: var(--surface-alt);
+      border-top: 1px solid var(--border);
+    }
+
+    .badge {
+      display: inline-block;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 12px;
+      margin: 4px 4px 4px 0;
+      font-size: 0.85rem;
+    }
+
+    .badge strong {
+      color: var(--accent-hover);
+    }
+
+    .disclaimer {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+  </style>
 </head>
+
 <body>
   <main class="container">
+
     <header>
       <h1>Translator Bahasa Gaul Politik</h1>
-      <p class="subtitle">Ketik kalimat biasa, biar diterjemahin versi receh-nya.</p>
+      <p class="subtitle">
+        Pilih mode terjemahan sesuai kebutuhan.
+      </p>
     </header>
 
     <section class="translator-panel">
-      <div class="text-area-group">
-        <label for="input-text">Teks Asli</label>
-        <textarea id="input-text" rows="6" placeholder="Tulis kalimatmu di sini..."></textarea>
+
+      <div class="mode-group">
+        <label for="translation-mode">Mode Kamus</label>
+
+        <select id="translation-mode" class="mode-select">
+          <option value="slang-to-name">
+            Bahasa Gaul → Nama Pejabat
+          </option>
+
+          <option value="name-to-slang">
+            Nama Pejabat → Bahasa Gaul
+          </option>
+        </select>
       </div>
 
       <div class="text-area-group">
-        <label for="output-text">Hasil Terjemahan</label>
-        <textarea id="output-text" rows="6" readonly></textarea>
+        <label id="input-label" for="input-text">
+          Teks Asli
+        </label>
+
+        <textarea
+          id="input-text"
+          rows="6"
+          placeholder="Tulis kalimatmu di sini..."
+        ></textarea>
+      </div>
+
+      <div class="text-area-group">
+        <label id="output-label" for="output-text">
+          Hasil Terjemahan
+        </label>
+
+        <textarea
+          id="output-text"
+          rows="6"
+          readonly
+        ></textarea>
       </div>
 
       <div class="actions">
-        <button id="copy-btn" type="button">Salin Output</button>
-        <button id="reset-btn" type="button">Reset</button>
-        <span id="copy-status" role="status" aria-live="polite" class="sr-status"></span>
+        <button id="copy-btn" type="button">
+          Salin Output
+        </button>
+
+        <button id="reset-btn" type="button">
+          Reset
+        </button>
+
+        <span
+          id="copy-status"
+          role="status"
+          aria-live="polite"
+          class="sr-status"
+        ></span>
       </div>
+
     </section>
 
     <section class="vocab-section">
@@ -204,6 +275,7 @@ button:hover {
     <footer class="disclaimer">
       Halaman ini berisi konten hiburan/parodi, bukan pernyataan faktual.
     </footer>
+
   </main>
 
   <script type="module" src="js/app.js"></script>
